@@ -19,7 +19,9 @@ public class EventDispatcher
     public void Subscribe<T>(Action<T> handler)
     {
         if (handler == null) 
-            return;
+        {
+            throw new ArgumentNullException("The handler method cannot be null");
+        }
         
         if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> existingHandlers))
         {
@@ -67,7 +69,14 @@ public class EventDispatcher
             }
             foreach (Delegate handler in handlers)
             {
-                ((Action<T>)handler)?.Invoke(payload);
+                try
+                { 
+                    ((Action<T>)handler)?.Invoke(payload);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error occurred while dispatching the event: {e.Message}");
+                }
             }
         }
         
@@ -95,7 +104,7 @@ public class EventDispatcher
     }
     
     /// <summary>
-    /// Enables to add multiple observers at once.
+    /// Dispatches multiple events. Useful for ordered dispatching.
     /// </summary>
     /// <param name="events">The observer list.</param>
     /// <typeparam name="T">Event type</typeparam>
