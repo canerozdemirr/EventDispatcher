@@ -126,6 +126,8 @@ public class ConsoleLogger : MonoBehaviour
 }
 ```
 
+### Observer Pattern
+
 This event dispatcher is a basic but powerful implementation of the Observer Pattern. The primary aim is to promote loose coupling between different parts of your application. Here's a brief explanation of how it works:
 
 The Observer Pattern establishes a one-to-many relationship between objects, allowing for part-to-part communication without them being tightly bound to each other. In the context of this event dispatcher:
