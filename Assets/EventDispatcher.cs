@@ -93,5 +93,18 @@ public class EventDispatcher
     {
         _eventDictionary.Clear();
     }
+    
+    /// <summary>
+    /// Enables to add multiple observers at once.
+    /// </summary>
+    /// <param name="events">The observer list.</param>
+    /// <typeparam name="T">Event type</typeparam>
+    public void BatchDispatch<T>(params T[] events)
+    {
+        foreach (T eventPayload in events)
+        {
+            Dispatch(eventPayload);
+        }
+    }
 }
 
