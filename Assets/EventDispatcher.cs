@@ -108,7 +108,7 @@ public class EventDispatcher
     /// </summary>
     /// <param name="events">The observer list.</param>
     /// <typeparam name="T">Event type</typeparam>
-    public void BatchDispatch<T>(params T[] events)
+    public void Dispatch<T>(params T[] events)
     {
         foreach (T eventPayload in events)
         {
