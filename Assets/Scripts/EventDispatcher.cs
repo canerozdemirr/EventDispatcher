@@ -9,7 +9,7 @@ public class EventDispatcher
     private static readonly Lazy<EventDispatcher> _instance = new(() => new EventDispatcher());
     public static EventDispatcher Instance => _instance.Value;
 
-    private readonly Dictionary<Type, HashSet<Delegate>> _eventDictionary = new();
+    private readonly Dictionary<Type, List<Delegate>> _eventDictionary = new();
 
     private EventDispatcher()
     {
@@ -25,15 +25,15 @@ public class EventDispatcher
         }
         else
         {
-            _eventDictionary[typeof(T)] = new HashSet<Delegate> {handler};
+            _eventDictionary[typeof(T)] = new List<Delegate> {handler};
         }
     }
 
-    public void Unsubscribe<T>(Action<T> handler)
+    public void Unsubscribe<T>(Action<T> handler) where T: IEvent
     {
         if (handler == null) return;
 
-        if (_eventDictionary.TryGetValue(typeof(T), out HashSet<Delegate> existingHandlers))
+        if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> existingHandlers))
         {
             existingHandlers.Remove(handler);
             if (existingHandlers.Count == 0)
@@ -43,9 +43,9 @@ public class EventDispatcher
         }
     }
 
-    public void Dispatch<T>(T payload)
+    public void Dispatch<T>(T payload) where T: IEvent
     {
-        if (_eventDictionary.TryGetValue(typeof(T), out HashSet<Delegate> handlers))
+        if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> handlers))
         {
             foreach (Delegate handler in handlers)
             {
@@ -65,7 +65,7 @@ public class EventDispatcher
         }
     }
 
-    public void UnsubscribeAll<T>()
+    public void UnsubscribeAll<T>() where T: IEvent
     {
         _eventDictionary.Remove(typeof(T));
     }
@@ -75,7 +75,7 @@ public class EventDispatcher
         _eventDictionary.Clear();
     }
 
-    public void Dispatch<T>(params T[] events)
+    public void Dispatch<T>(params T[] events) where T: IEvent
     {
         foreach (var eventPayload in events)
         {
