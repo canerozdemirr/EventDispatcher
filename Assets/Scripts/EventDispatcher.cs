@@ -13,14 +13,21 @@ public class EventDispatcher
 
     private EventDispatcher()
     {
+        
     }
 
     public void Subscribe<T>(Action<T> handler) where T: IEvent
     {
         if (handler == null) throw new ArgumentNullException(nameof(handler), "The handler method cannot be null");
 
-        if (_eventDictionary.TryGetValue(typeof(T), out var existingHandlers))
+        if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> existingHandlers))
         {
+            if (existingHandlers.Contains(handler))
+            {
+                string errorMessage = $"The handler '{handler.Method.Name}' is already subscribed to the event '{typeof(T)}'.";
+                throw new InvalidOperationException(errorMessage);
+            }
+
             existingHandlers.Add(handler);
         }
         else
