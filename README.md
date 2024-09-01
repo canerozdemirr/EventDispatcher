@@ -34,7 +34,7 @@ An event dispatcher which applies the Observer Pattern, written in C# for Unity.
 For the demonstration of the event bus, I will make a simple event which will help us logging messages in the console. Here is the simple event that we will use: 
 
 ```csharp
-public struct ConsoleLogEvent
+public class ConsoleLogEvent : IEvent
 {
     public string LogMessage;
 
@@ -45,7 +45,7 @@ public struct ConsoleLogEvent
 }
 ```
 
-I picked struct as the type of event because I like the performance cost deduction when having to define more events as the game grows. It will also allow me to not worry about the null checks because it is immutable. However, you are free to define it with a different type. The event dispatcher does not worry about the type because it supports generic types. The decision is up to you.
+All events must inherit the "IEvent" interface because this will ensure type-safety when using the dispatcher. It is a good practice to ensure that events have pre-defined rules to be accepted as events.
 
 ### Subscribing to an Event
 
