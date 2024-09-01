@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Interfaces;
 using UnityEngine;
 
 public class EventDispatcher
@@ -8,13 +9,13 @@ public class EventDispatcher
     private static readonly Lazy<EventDispatcher> _instance = new(() => new EventDispatcher());
     public static EventDispatcher Instance => _instance.Value;
 
-    private readonly Dictionary<Type, List<Delegate>> _eventDictionary = new();
+    private readonly Dictionary<Type, HashSet<Delegate>> _eventDictionary = new();
 
     private EventDispatcher()
     {
     }
 
-    public void Subscribe<T>(Action<T> handler)
+    public void Subscribe<T>(Action<T> handler) where T: IEvent
     {
         if (handler == null) throw new ArgumentNullException(nameof(handler), "The handler method cannot be null");
 
@@ -24,7 +25,7 @@ public class EventDispatcher
         }
         else
         {
-            _eventDictionary[typeof(T)] = new List<Delegate> {handler};
+            _eventDictionary[typeof(T)] = new HashSet<Delegate> {handler};
         }
     }
 
@@ -32,7 +33,7 @@ public class EventDispatcher
     {
         if (handler == null) return;
 
-        if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> existingHandlers))
+        if (_eventDictionary.TryGetValue(typeof(T), out HashSet<Delegate> existingHandlers))
         {
             existingHandlers.Remove(handler);
             if (existingHandlers.Count == 0)
@@ -44,7 +45,7 @@ public class EventDispatcher
 
     public void Dispatch<T>(T payload)
     {
-        if (_eventDictionary.TryGetValue(typeof(T), out List<Delegate> handlers))
+        if (_eventDictionary.TryGetValue(typeof(T), out HashSet<Delegate> handlers))
         {
             foreach (Delegate handler in handlers)
             {

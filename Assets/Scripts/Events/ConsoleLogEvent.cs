@@ -1,5 +1,8 @@
 
-public struct ConsoleLogEvent
+using System;
+using Interfaces;
+
+public class ConsoleLogEvent : IEvent
 {
     public string LogMessage;
 
